@@ -15,10 +15,10 @@ services:
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
-      DB_HOST: '${DB_HOST}'
-      DB_NAME: '${DB_DATABASE}'
-      DB_USER: '${DB_USERNAME}'
-      DB_PASS: '${DB_PASSWORD:-secret}'
+      DB_HOST: db
+      DB_NAME: recipe-app-db
+      DB_USER: sail
+      DB_PASS: password
     depends_on:
       - db
 
@@ -27,10 +27,10 @@ services:
     ports:
       - '${FORWARD_DB_PORT:-5432}:5432'
     environment:
-      PGPASSWORD: '${DB_PASSWORD:-secret}'
-      POSTGRES_DB: '${DB_DATABASE}'
-      POSTGRES_USER: '${DB_USERNAME}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+      PGPASSWORD: password
+      POSTGRES_DB: recipe-app-db
+      POSTGRES_USER: sail
+      POSTGRES_PASSWORD: password
     volumes:
       - 'dev-db-data:/var/lib/postgresql/data'
 
