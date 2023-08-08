@@ -44,6 +44,10 @@ services:
       - db
     ports:
       - "5050:5050"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
 
 volumes:
   dev-db-data:
+  pgadmin-data:
