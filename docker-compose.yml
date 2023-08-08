@@ -18,7 +18,7 @@ services:
       DB_HOST: db
       DB_NAME: recipe-app-db
       DB_USER: sail
-      DB_PASS: password
+      DB_PASSWORD: password
     depends_on:
       - db
 
