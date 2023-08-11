@@ -2,6 +2,7 @@
 Test for the tags API
 """
 from django.contrib.auth import get_user_model
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.test import TestCase
 
@@ -13,6 +14,11 @@ from core.models import Tag
 from recipe.serializers import TagSerializer
 
 TAGS_URL = reverse('recipe:tag-list')
+
+
+def detail_url(tag_id: int):
+    """Create and return a tag detail url."""
+    return reverse('recipe:tag-detail', args=[tag_id])
 
 
 def create_user(email='user@exmple.com', password='testpass123'):
@@ -64,3 +70,27 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], tag.name)
         self.assertEqual(res.data[0]['id'], tag.id)
+
+    def test_update_tag(self):
+        """Test updating a tag."""
+        tag: Tag = Tag.objects.create(user=self.user, name='After Dinner')
+
+        payload = {
+            'name': 'Dessert'
+        }
+        url = detail_url(tag.id)
+        res = self.client.patch(url, payload)
+        tag.refresh_from_db()
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(tag.name, payload['name'])
+
+    def test_delete_tag(self):
+        """Test deleting a tag."""
+        tag: Tag = Tag.objects.create(user=self.user, name='Breakfast')
+        url = detail_url(tag.id)
+
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        tags: QuerySet = Tag.objects.filter(user=self.user)
+        self.assertFalse(tags.exists())
