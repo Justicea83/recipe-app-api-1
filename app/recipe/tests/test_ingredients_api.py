@@ -63,7 +63,7 @@ class PrivateIngredientsApiTests(TestCase):
         """Test list of tags is limited to authenticated user."""
         user2 = create_user('user2@example.com')
         Ingredient.objects.create(user=user2, name='Kaly')
-        ingredient: Ingredient = Ingredient.objects\
+        ingredient: Ingredient = Ingredient.objects \
             .create(user=self.user, name='Comfy')
         res = self.client.get(INGREDIENTS_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -71,4 +71,14 @@ class PrivateIngredientsApiTests(TestCase):
         self.assertEqual(res.data[0]['name'], ingredient.name)
         self.assertEqual(res.data[0]['id'], ingredient.id)
 
+    def test_update_ingredient(self):
+        """Test updating an ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name='Cilantro')
 
+        payload = {'name': 'Coriander'}
+        url = detail_url(ingredient.id)
+        res = self.client.patch(url, payload)
+
+        self.assertTrue(res.status_code, status.HTTP_200_OK)
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.name, 'Coriander')
