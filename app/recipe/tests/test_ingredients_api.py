@@ -2,7 +2,6 @@
 Test for the ingredients API.
 """
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet
 from django.urls import reverse
 from django.test import TestCase
 
@@ -64,9 +63,12 @@ class PrivateIngredientsApiTests(TestCase):
         """Test list of tags is limited to authenticated user."""
         user2 = create_user('user2@example.com')
         Ingredient.objects.create(user=user2, name='Kaly')
-        ingredient: Ingredient = Ingredient.objects.create(user=self.user, name='Comfy')
+        ingredient: Ingredient = Ingredient.objects\
+            .create(user=self.user, name='Comfy')
         res = self.client.get(INGREDIENTS_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], ingredient.name)
         self.assertEqual(res.data[0]['id'], ingredient.id)
+
+
